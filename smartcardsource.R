@@ -79,7 +79,7 @@ Daum2WGS84 <- function(xy){
 }
 
 
-pathvolpoly <- function(res, pathvol, spathind=NULL, turnpathind=NULL, scl=4){
+pathvolpoly <- function(res, pathvol, stpathind=NULL, turnpathind=NULL, scl=4){
     
     require(polyclip)
     if(is.null(turnpathind)){
