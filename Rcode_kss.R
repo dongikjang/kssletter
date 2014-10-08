@@ -25,10 +25,10 @@ update.packages()
 #####################################################################################################
 #####################################################################################################
 # Preliminary Steps for Windows user
-# Some codes in the following need the file with HTTP Secure (not http).
-# 'download.file' function in R does not support HTTP Secure with default 'method'.
+# Some codes in the following need to download files with HTTP Secure (not http).
+# The 'download.file' function in R does not support HTTP Secure with default 'method'.
 # Therefore we should change the method option of the 'download.file' function in to "curl" or "wget"
-# But "curl" and "wget" are not installed basically on the Windows since that are command line tools.
+# But "curl" and "wget" have not been installed basically on the Windows since those are command line tools.
 #
 # You should install programs with following steps 
 # 0. Install Rtools (optional)
