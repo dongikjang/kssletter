@@ -3,9 +3,10 @@
 
 
 ### Preliminary Steps for Windows user
+This R-script has been thoroughly tested under Mac OS X 10.9 and Ubuntu 14.04.
 Some codes in the following need to download files with HTTP Secure (not http).
 The 'download.file' function in R does not support HTTP Secure with default 'method'.
-Therefore we should change the method option of the 'download.file' function in to "curl" or "wget"
+Therefore we should change the method option of the 'download.file' function in to "curl" or "wget".
 But "curl" and "wget" have not been installed basically on the Windows since those are command line tools.
 
 
