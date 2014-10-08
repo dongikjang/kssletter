@@ -33,7 +33,7 @@ You should install programs with following steps
 
  3. On the CMD (not one the powershell) type the following
  
- @powershell -NoProfile -ExecutionPolicy unrestricted -Command "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))" && SET PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin
+ 	@powershell -NoProfile -ExecutionPolicy unrestricted -Command "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))" && SET PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin
 
 
  4. Install curl and wget with following commands
@@ -42,4 +42,4 @@ You should install programs with following steps
 
 		choco install Wget
 
-  Then we can use 'download.file' for HTTP Secure.
+  Then we can use 'download.file' with HTTP Secure.
