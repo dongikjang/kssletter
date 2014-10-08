@@ -110,7 +110,9 @@ image.plot(tmp, col=cols, asp=1, breaks=zbreaks,
 
 # (b)
 library(colorRamps)
-xyz <- read.delim("~/DataDisk/MacHD2/Tips and Manuals/R/R tips/surface_of_world_data/jang1235-37/jang1235-37.xyz", header=F)
+download.file("https://www.dropbox.com/s/6opewjw02wn0fj0/SurfaceWorld.xyz?dl=0",
+              destfile="SurfaceWorld.xyz", method="curl", extra=" -L -k ", quiet=TRUE)
+xyz <- read.delim("SurfaceWorld.xyz", header=F)
 vals <- matrix(xyz[,3], 2161,1081)
 long <- pi*matrix(xyz[,1], 2161,1081)/180
 lati <- pi*matrix(xyz[,2], 2161,1081)/180
@@ -128,6 +130,7 @@ col1 <- blue2red(2*n1)[1:n1]
 col2 <- blue2red(2*n2)[(n2+1):(2*n2)]
 col <- c(col1, col2)
 col <- col[tmp+n1]
+library(rgl)
 persp3d(x, y, z, col=col,specular="black", axes=FALSE, box=FALSE, xlab="", ylab="", zlab="")
 
 
