@@ -1,17 +1,25 @@
 #####################################################################################################
 #####################################################################################################
-#setwd("~/Dropbox/KSS_Letter/Fig")
+# R-script for KSS Letter on October 2014
+# Since the encoding of this file is UTF-8, 
+# If you see the non-readeble characers in this script, re-open this file with UTF-8 encoding.
+dir.create("KSSLetter")
+setwd("KSSLetter")
+
 gitadd <- "https://github.com/dongikjang/"
 
 # install required packages
-reqpkgs <- c("mapdata", "RColorBrewer", "RNetCDF", "colorRamps", "rgl", "ggmap", "jpeg", "png", "plyr",
-             "scales", "polyclip")
+reqpkgs <- c("mapdata", "RColorBrewer", "RNetCDF", "colorRamps", "rgl", 
+             "ggmap", "jpeg", "png", "plyr", "fields", "geosphere", 
+             "XML", "bitops", "jpeg", "ggplot2",
+             "scales", "polyclip", "maptools", "rgdal", "data.table", 
+             "RgoogleMaps", "sp", "maps", "RCurl")
 inspkgind <- !reqpkgs %in% installed.packages()[,1] 
 if(any(inspkgind)){
   for(inspkg in reqpkgs[inspkgind]) install.packages(inspkg)
 }
 
-update.packages
+update.packages()
 
 # sessionInfo()
 #####################################################################################################
@@ -317,87 +325,33 @@ polygon(polyback/2.5, col=colval[2], border="white")
 #dev.off()
 
 
-
-
-
-
-
-
-gm <- get_googlemap(center = "seoul", zoom = 12, filename = "ggmapTemp")
-location <- as.numeric(attr(gm, "bb"))[c(2, 1, 4, 3)]
-out <- get_stamenmap(bbox = location, zoom = 12, maptype = "toner", 
-                       crop = TRUE, messaging = FALSE, urlonly = FALSE, 
-                       filename = "ggmapTmp", color = "color")
-xmin <- attr(out, "bb")$ll.lon
-xmax <- attr(out, "bb")$ur.lon
-ymin <- attr(out, "bb")$ll.lat
-ymax <- attr(out, "bb")$ur.lat
-
-outraster <- as.raster(out)
-
-library(fields)
-fit1 <- Tps(pm10[, c("경도", "위도")], pm10$pm10, lambda=0.000001)
-result1 <- predictSurface(fit1, grid.list = NULL, extrap = FALSE, 
-                         nx = 200, ny = 200, drop.Z = TRUE)
-fit2 <- Tps(pm10[, c("경도", "위도")], pm10$pm2.5)
-result2 <- predictSurface(fit2, grid.list = NULL, extrap = FALSE, 
-                          nx = 200, ny = 200, drop.Z = TRUE)
-fit3 <- Tps(pm10[, c("경도", "위도")], pm10$no2)
-result3 <- predictSurface(fit3, grid.list = NULL, extrap = FALSE, 
-                          nx = 200, ny = 200, drop.Z = TRUE)
-fit4 <- Tps(pm10[, c("경도", "위도")], pm10$o3)
-result4 <- predictSurface(fit4, grid.list = NULL, extrap = FALSE, 
-                          nx = 200, ny = 200, drop.Z = TRUE)
-fit5 <- Tps(pm10[, c("경도", "위도")], pm10$so2)
-result5 <- predictSurface(fit5, grid.list = NULL, extrap = FALSE, 
-                          nx = 200, ny = 200, drop.Z = TRUE)
-fit6 <- Tps(pm10[, c("경도", "위도")], pm10$co)
-result6 <- predictSurface(fit6, grid.list = NULL, extrap = FALSE, 
-                          nx = 200, ny = 200, drop.Z = TRUE)
-
-par(mar = c(0,0,0,0), xaxs = "i", yaxs = "i")
-plot(c(xmin, xmax), c(ymin, ymax), type = "n", xlab = "", ylab = "")
-rasterImage(outraster, xmin, ymin, xmax, ymax, interpolate = TRUE)
-image(result1, add=TRUE, col=alpha(tim.colors(64), .7))
-
-par(mar = c(0,0,0,0), xaxs = "i", yaxs = "i")
-plot(c(xmin, xmax), c(ymin, ymax), type = "n", xlab = "", ylab = "")
-rasterImage(outraster, xmin, ymin, xmax, ymax, interpolate = TRUE)
-image(result2, add=TRUE, col=alpha(tim.colors(64), .7))
-
-for(i in 1:6){
-  cairo_pdf(paste("airseoul", i, ".pdf", sep=""), width=10, height=6.9)
-  par(mar = c(0,0,0,2), xaxs = "i", yaxs = "i")
-  mat <- matrix(1:2, ncol=2)
-  layout(mat, width=c(10,1))
-  plot(c(xmin, xmax), c(ymin, ymax), type = "n", xlab = "", ylab = "", asp=1, axes=FALSE)
-  #box()
-  rasterImage(outraster, xmin, ymin, xmax, ymax, interpolate = TRUE)
-  
-  assign("result", eval(parse(text= paste("result", i, sep=""))))
-  image(result, add=TRUE, col=alpha(tim.colors(64), .7), useRaster=TRUE)
-  zrng <- range(result$z, na.rm=TRUE)
-  zseq <- seq(zrng[1], zrng[2],, 64)
-  par(mar = c(6,0,6,3))
-  image(list(x=1, y=zseq, z=matrix(zseq, nrow=1)), useRaster=TRUE, axes=FALSE, col=tim.colors(64))
-  axis(4, cex.axis=3, padj=.5)
-  dev.off()
-}
-
-
+#####################################################################################################
+#####################################################################################################
+# Figure 8
 library(maptools)
 library(rgdal)
 library(RColorBrewer)
+
+# (a)
+dir.create("2012_1_0")
+download.file(paste(gitadd, "kssletter/raw/master/2012_1_0/temp.shp", sep=""),
+              destfile="2012_1_0/temp.shp", method="curl", extra=" -L -k " )
+download.file(paste(gitadd, "kssletter/raw/master/2012_1_0/temp.dbf", sep=""),
+              destfile="2012_1_0/temp.dbf", method="curl", extra=" -L -k " )
+download.file(paste(gitadd, "kssletter/raw/master/2012_1_0/temp.shx", sep=""),
+              destfile="2012_1_0/temp.shx", method="curl", extra=" -L -k " )
+
 proj4val <- "+proj=tmerc +lat_0=38 +lon_0=127.0028902777778 +k=1 +x_0=200000 +y_0=500000 +ellps=bessel
-             +units=m +no_defs +towgs84=-115.80,474.99,674.11,1.16,-2.31,-1.63,6.43"
++units=m +no_defs +towgs84=-115.80,474.99,674.11,1.16,-2.31,-1.63,6.43"
 nc <- readShapePoly("2012_1_0/temp.shp", proj4string=CRS(proj4val))
 nc <- spTransform(nc, CRS("+init=epsg:4326")) 
-cairo_pdf("sgis2.pdf", width=8, height=7)
+#cairo_pdf("sgis2.pdf", width=8, height=7)
 cols <- c(brewer.pal(9, "Set1"), brewer.pal(7,"Accent"))
 par(mar=c(0,0,0,0))
 plot(nc, col=cols, lwd=.1, border=1)
-dev.off()
+#dev.off()
 
+# (b)
 library(plyr)
 val2col2 <- function(z, zlim, col = heat.colors(12), breaks){
   if(!missing(breaks)){
@@ -418,77 +372,89 @@ val2col2 <- function(z, zlim, col = heat.colors(12), breaks){
 }
 
 library(data.table)
-load('~/Dropbox/cencus2010_den_wgs1984.RData')
+download.file(paste(gitadd, "kssletter/raw/master/cencus2010_den_wgs1984.RData", sep=""),
+              destfile="cencus2010_den_wgs1984.RData", method="curl", extra=" -L -k " )
+
+load('cencus2010_den_wgs1984.RData')
 name <- unlist(lapply(out, function(x) x$name))
 ind <- which(substring(name, 1, 5) == 11230)
 out2 <- out[ind]
 #png("census2010_den.png", width=2500, height=2000)
-cairo_pdf("census2010_den.pdf", width=12.5, height=10)
-  mat <- matrix(1:2, nrow=2)
-  layout(mat, height=c(9,2))
-  par(mar=c(1,4,0,2), family="NanumGothic")
-  proj4val <- "+proj=tmerc +lat_0=38 +lon_0=127.0028902777778 +k=1 +x_0=200000 +y_0=500000 +ellps=bessel
+#cairo_pdf("census2010_den.pdf", width=12.5, height=10)
+mat <- matrix(1:2, nrow=2)
+layout(mat, height=c(9,2))
+par(mar=c(1,4,0,2), family="NanumGothic")
+proj4val <- "+proj=tmerc +lat_0=38 +lon_0=127.0028902777778 +k=1 +x_0=200000 +y_0=500000 +ellps=bessel
              +units=m +no_defs +towgs84=-115.80,474.99,674.11,1.16,-2.31,-1.63,6.43"
-  nc <- readShapePoly("~/Dropbox/KSS_Letter/Fig/2012_2_11230/temp.shp", proj4string=CRS("+init=epsg:2097"))
-  nc <- spTransform(nc, CRS("+init=epsg:4326")) 
-  plot(nc, col=gray(.9), border=gray(.9))
-  zlim <- range(unlist(lapply(out, function(x) x[[3]])), na.rm=TRUE)
-  zlim[2] <- 60000
-  cols <- tim.colors(64) # colorRampPalette(c("green", "red"), space="rgb")(64)
-  l_ply(out2, function(x) plot(x$Geometry, 
-                              col=alpha(val2col2(x$popdensity, zlim, col=cols), 1), 
-                              add=TRUE, 
-                              border="white", 
-                              lwd=.1))
-  #title(main=paste("2010", paste(rep(" ", 92), collapse=""), 
-  #                 "\n Population and Housing",  paste(rep(" ", 60), collapse=""),
-  #                 "\nCensus",   paste(rep(" ", 87), collapse=""), sep=""), 
-  #      cex.main=5, line=-13)
-  par(mar=c(4,8,3.2,8))
-  image(matrix(seq(0,1,,200)), col=tim.colors(200), axes=FALSE, useRaster=TRUE)
-  seqval <- seq(floor(zlim[1]), ceiling(zlim[2]))
-  labval <- seqval[!duplicated(floor(seqval/10000)*10000)]
-  atval <- (labval - floor(zlim[1]))/(ceiling(zlim[2])-floor(zlim[1]))
-  labval <- labval[-1]
-  labval[length(labval)] <- paste(">", ceiling(zlim[2]), sep="")
-  atval <- atval[-1]
-  axis(1, at=atval, labels=labval, cex.axis=3, padj=.7)
-  mtext(expression(group("(", bold(명/km^2), ")")), side=1, line=2.1, at=1.07, cex=2)
-dev.off()
-
-
-load('cencus2010_den_wgs1984.RData')
-nc$name <- as.factor(iconv(as.character(nc$name), "EUC-KR", "UTF-8"))
-ncs <- subset(nc, name=="서울특별시")
-plot(ncs, col=gray(.9), border=gray(.9))
+nc <- readShapePoly("~/Dropbox/KSS_Letter/Fig/2012_2_11230/temp.shp", proj4string=CRS("+init=epsg:2097"))
+nc <- spTransform(nc, CRS("+init=epsg:4326")) 
+plot(nc, col=gray(.9), border=gray(.9))
 zlim <- range(unlist(lapply(out, function(x) x[[3]])), na.rm=TRUE)
 zlim[2] <- 60000
 cols <- tim.colors(64) # colorRampPalette(c("green", "red"), space="rgb")(64)
-l_ply(out[1:1000], function(x) plot(x$Geometry, 
-                            col=alpha(val2col2(x$popdensity, zlim, col=cols), 1), 
-                            add=TRUE, 
-                            border="white", 
-                            lwd=.7))
+l_ply(out2, function(x) plot(x$Geometry, 
+                             col=alpha(val2col2(x$popdensity, zlim, col=cols), 1), 
+                             add=TRUE, 
+                             border="white", 
+                             lwd=.1))
+par(mar=c(4,8,3.2,8))
+image(matrix(seq(0,1,,200)), col=tim.colors(200), axes=FALSE, useRaster=TRUE)
+seqval <- seq(floor(zlim[1]), ceiling(zlim[2]))
+labval <- seqval[!duplicated(floor(seqval/10000)*10000)]
+atval <- (labval - floor(zlim[1]))/(ceiling(zlim[2])-floor(zlim[1]))
+labval <- labval[-1]
+labval[length(labval)] <- paste(">", ceiling(zlim[2]), sep="")
+atval <- atval[-1]
+axis(1, at=atval, labels=labval, cex.axis=3, padj=.7)
+mtext(expression(group("(", bold(명/km^2), ")")), side=1, line=2.1, at=1.07, cex=2)
+#dev.off()
 
 
 
-cairo_pdf("subway.pdf", width=5, height=5)
+#####################################################################################################
+#####################################################################################################
+# Figure 9
+# Based on Figure 8
+download.file(paste(gitadd, "kssletter/raw/master/seoul_subway2.R", sep=""),
+              destfile="seoul_subway2.R", method="curl", extra=" -L -k " )
+download.file(paste(gitadd, "kssletter/raw/master/SeoulSubwayShp.zip", sep=""),
+              destfile="SeoulSubwayShp.zip", method="curl", extra=" -L -k " )
+unzip("SeoulSubwayShp.zip", exdir="SeoulSubwayShp")
+shpfolder <- "SeoulSubwayShp"
+
+
+library(maptools)
+library(rgdal)
+proj4val <- "+proj=tmerc +lat_0=38 +lon_0=127.0028902777778 +k=1 +x_0=200000 +y_0=500000 +ellps=bessel
+             +units=m +no_defs +towgs84=-115.80,474.99,674.11,1.16,-2.31,-1.63,6.43"
+nc <- readShapePoly("2012_1_0/temp.shp", proj4string=CRS(proj4val))
+nc <- spTransform(nc, CRS("+init=epsg:4326")) 
+nc$name <- as.factor(iconv(as.character(nc$name), "EUC-KR", "UTF-8"))
+ncs <- subset(nc, name=="서울특별시")
+
+#cairo_pdf("subway.pdf", width=5, height=5)
 par(mar=c(0,0,0,0))
-plot(ncs)
-source("/home/jang/DataDisk/Dropbox/OpenStreetMap/seoul_subway2.R")
-dev.off()
+plot(ncs, col=gray(.7))
+source("seoul_subway2.R")
+#dev.off()
 
 
 
+#####################################################################################################
+#####################################################################################################
+# Figure 10
 library(osmar)
 api <- osmsource_api()
 bbox  <- corner_bbox(126.9450, 37.445, 126.963, 37.470)
 osmmap <- get_osm(bbox, source = api)
-cairo_pdf("snu1.pdf", width=7, height=8)
+# (a)
+#cairo_pdf("snu1.pdf", width=7, height=8)
 par(mar=c(0,0,0,0))
 plot(bbox[c(1,3)], bbox[c(2,4)], asp=1, xlab="", ylab="", type="n", axes=FALSE)
 plot_ways(osmmap, add=TRUE)
-dev.off()
+#dev.off()
+
+# (b)
 buildingid <- find(osmmap, way(tags(id ==185936759 | k == "building" | v ==  "농업생명과학대학 (200)")))
 ids <- find_down(osmmap, way(buildingid))
 building <- subset(osmmap, ids=ids)
@@ -532,7 +498,7 @@ ids <- unlist(lapply(as_sp(park, "polygons")@polygons, inpoly))
 park <- subset(as_sp(park, "polygons"), ids)
 
 
-cairo_pdf("snu2.pdf", width=7, height=8)
+#cairo_pdf("snu2.pdf", width=7, height=8)
 library(sp)
 cols <- brewer.pal(9, "Set1")
 par(mar=c(0,0,0,0))
@@ -545,159 +511,4 @@ plot_ways(road3, add=T, lwd=2, col=cols[2])
 plot_ways(road4, add=T, lwd=2, col=cols[2])
 plot_ways(road5, add=T, lwd=1, col=cols[2])
 plot(as_sp(building, "polygons"), col = cols[4], add=TRUE)
-
-#plot_ways(osmmap, add=TRUE)
-dev.off()
-
-
-http://rpsychologist.com/working-with-shapefiles-projections-and-world-maps-in-ggplot
-
-
-library(rgdal)
-library(maptools)
-
-P4S.latlon <- CRS("+proj=longlat +datum=WGS84")
-map('worldHires', fill=TRUE, plot=T, col=cols)
-hrr.shp <- readShapePoly("HRR_Bdry", verbose=TRUE, proj4string=P4S.latlon)
-plot(hrr.shp)
-
-
-
-world.map <- readShapeSpatial("TM_WORLD_BORDERS-0.3/TM_WORLD_BORDERS-0.3.shp", proj4string=CRS("+proj=longlat +ellipse=GRS80"))
-plot(world.map)
-world.map2 <- spTransform(world.map, CRS("+proj=merc +ellipse=GRS80"))
-
-proj4val <- "+proj=tmerc +lat_0=38 +lon_0=127.0028902777778 +k=1 +x_0=200000 +y_0=500000 +ellps=bessel
-             +units=m +no_defs +towgs84=-115.80,474.99,674.11,1.16,-2.31,-1.63,6.43"
-nc <- readShapePoly("2012_1_0/temp.shp", proj4string=CRS(proj4val))
-ncwgs <- spTransform(nc, CRS("+init=epsg:4326")) 
-
-x <- 124:132
-y <- 33:39
-xyg <- expand.grid(x=x, y=y)
-coordinates(xyg) <- c("x", "y")
-proj4string(xyg) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
-ind11 <- 1:length(x)
-ind12 <- (length(x)*length(y) - length(x) + 1):(length(x)*length(y))
-ind21 <- 1 + seq(0, length(x)*length(y)-1, by=length(x))
-ind22 <- length(x) + seq(0, length(x)*length(y)-1, by=length(x))
-
-xyg2 <- spTransform(xyg, CRS("+proj=merc +lat_0=38 +lon_0=127  +k=1 +x_0=200000 +y_0=500000 +ellps=bessel +units=m +no_defs"))
-xyg3 <- spTransform(xyg, CRS("+proj=tmerc +lat_0=38 +lon_0=127  +k=1 +x_0=200000 +y_0=500000 +ellps=bessel +units=m +no_defs"))
-
-
-
-
-par(mfrow=c(1,3))
-plot(ncwgs)
-segments(coordinates(xyg)[ind11 ,1], coordinates(xyg)[ind11 ,2], coordinates(xyg)[ind12 ,1], coordinates(xyg)[ind12 ,2], col=2)
-segments(coordinates(xyg)[ind21 ,1], coordinates(xyg)[ind21 ,2], coordinates(xyg)[ind22 ,1], coordinates(xyg)[ind22 ,2], col=2)
-
-plot(spTransform(ncwgs, CRS("+proj=merc +lat_0=38 +lon_0=127  +k=1 +x_0=200000 +y_0=500000 +ellps=bessel +units=m +no_defs")))
-segments(coordinates(xyg2)[ind11 ,1], coordinates(xyg2)[ind11 ,2], coordinates(xyg2)[ind12 ,1], coordinates(xyg2)[ind12 ,2], col=2)
-segments(coordinates(xyg2)[ind21 ,1], coordinates(xyg2)[ind21 ,2], coordinates(xyg2)[ind22 ,1], coordinates(xyg2)[ind22 ,2], col=2)
-plot(spTransform(ncwgs, CRS("+proj=tmerc +lat_0=38 +lon_0=127  +k=1 +x_0=200000 +y_0=500000 +ellps=bessel +units=m +no_defs")))
-segments(coordinates(xyg3)[ind11 ,1], coordinates(xyg3)[ind11 ,2], coordinates(xyg3)[ind12 ,1], coordinates(xyg3)[ind12 ,2], col=2)
-segments(coordinates(xyg3)[ind21 ,1], coordinates(xyg3)[ind21 ,2], coordinates(xyg3)[ind22 ,1], coordinates(xyg3)[ind22 ,2], col=2)
-
-
-
-korline <- function(island=TRUE){
-  require(maps)
-  require(mapdata)
-  southkor <- map('worldHires', 'South Korea', plot=FALSE)
-  ind <- c(0,which(is.na(southkor$x)), length(southkor$x)+1)
-  x0 <- southkor$x[1:ind[5]]
-  y0 <- southkor$y[1:ind[5]]
-  x0[ind[4]:ind[5]] <- x0[ind[5]:ind[4]]
-  y0[ind[4]:ind[5]] <- y0[ind[5]:ind[4]]
-  x0 <- x0[!is.na(x0)]
-  y0 <- y0[!is.na(y0)]
-  out <- data.frame(x=x0, y=y0, gp="SLand")
-  
-  if(island){
-    islandname <- c("Ullungdo", "Jindo", "Namhaedo", "Paengnyongdo", "Chejudo", "Kojedo", "Ganghwado")
-    for(i in 1:length(islandname)){
-      out1 <- data.frame(x = southkor$x[(ind[4 + i]+1):(ind[5 + i]-1)], 
-                         y = southkor$y[(ind[4 + i]+1):(ind[5 + i]-1)],
-                         gp = islandname[i])
-      out <- rbind(out, out1)
-    }
-  }
-  northkor <- map('worldHires', 'North Korea', plot=FALSE,fill=TRUE)
-  out2 <- data.frame(x=northkor$x, y=northkor$y, gp="NLand")
-  out <- rbind(out, out2)
-  return(as.data.frame(out))
-}
-
-kor <- korline()
-spkor <- split(kor, kor$gp)
-polykor <- SpatialPolygons(lapply(spkor, function(xx) Polygons(list(Polygon(xx[,1:2])), ID=as.character(xx$gp[1])) ))
-spolykor <- SpatialPolygonsDataFrame(polykor, data.frame(gp = 1:length(spkor), row.names=names(spkor)))
-proj4string(spolykor) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
-
-
-x <- 124:132
-y <- 33:44
-xyg <- expand.grid(x=x, y=y)
-coordinates(xyg) <- c("x", "y")
-proj4string(xyg) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
-ind11 <- 1:length(x)
-ind12 <- (length(x)*length(y) - length(x) + 1):(length(x)*length(y))
-ind21 <- 1 + seq(0, length(x)*length(y)-1, by=length(x))
-ind22 <- length(x) + seq(0, length(x)*length(y)-1, by=length(x))
-
-xyg2 <- spTransform(xyg, CRS("+proj=merc +lat_0=38 +lon_0=127  +k=1 +x_0=200000 +y_0=500000 +ellps=bessel +units=m +no_defs"))
-xyg3 <- spTransform(xyg, CRS("+proj=tmerc +lat_0=38 +lon_0=127  +k=1 +x_0=200000 +y_0=500000 +ellps=bessel +units=m +no_defs"))
-
-
-
-
-par(mfrow=c(2,2))
-plot(spolykor)
-segments(coordinates(xyg)[ind11 ,1], coordinates(xyg)[ind11 ,2], coordinates(xyg)[ind12 ,1], coordinates(xyg)[ind12 ,2], col=2)
-segments(coordinates(xyg)[ind21 ,1], coordinates(xyg)[ind21 ,2], coordinates(xyg)[ind22 ,1], coordinates(xyg)[ind22 ,2], col=2)
-
-plot(spTransform(spolykor, CRS("+proj=tmerc +lat_0=38 +lon_0=127  +k=1 +x_0=200000 +y_0=500000 +ellps=bessel +units=m +no_defs")))
-segments(coordinates(xyg3)[ind11 ,1], coordinates(xyg3)[ind11 ,2], coordinates(xyg3)[ind12 ,1], coordinates(xyg3)[ind12 ,2], col=2)
-segments(coordinates(xyg3)[ind21 ,1], coordinates(xyg3)[ind21 ,2], coordinates(xyg3)[ind22 ,1], coordinates(xyg3)[ind22 ,2], col=2)
-
-
-###########################
-download.file("https://github.com/dongikjang/kssletter/raw/master/9711vol.RData", 
-              destfile="9711vol.RData", method="curl", extra=" -L -k " )
-load("9711vol.RData")
-
-source_https <- function(url, ...) {
-  require(RCurl)
-  sapply(c(url, ...), function(u) {
-    eval(parse(text = getURL(u, followlocation = TRUE, 
-                             cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))), 
-         envir = .GlobalEnv)
-  })
-}
-
-ghadd <- "https://raw.githubusercontent.com/dongikjang/"
-source_https(paste(ghadd, "kssletter/master/smartcardsource.R", sep=""))
-source_https(paste(ghadd, "DaumMap/master/getDaummap.R", sep=""))
-
-out <- pathvolpoly(res, pathvol, scl=1.2)
-polygo <- out$polygo
-polyback <- out$polyback
-
-
-
-library(RColorBrewer)
-library(scales)
-colval <- alpha(brewer.pal(9, "Set1"), .6)
-
-lon <- c(126.7405, 127.0398)
-lat <- c(37.45889, 37.68667)
-dmap <- getDaumMap(lon, lat, zoom=NA,  maproj = "Daum")
-
-cairo_pdf("daum.pdf", width=8, height=7)
-par(mar=c(0,0,0,0))
-plot(dmap)
-polygon(polygo/2.5, col=colval[1], border="white")
-polygon(polyback/2.5, col=colval[2], border="white")
-dev.off()
+#dev.off()
