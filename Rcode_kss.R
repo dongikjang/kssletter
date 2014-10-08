@@ -267,31 +267,21 @@ for(i in 1:6){
 
 
 
+#####################################################################################################
+#####################################################################################################
+# Figure 6
 
 
+download.file(paste(gitadd, "/kssletter/raw/master/bus9711.csv", sep=""), 
+              destfile="bus97110.csv", method="curl", extra=" -L -k " )
+bus9711 <- read.csv("bus97110.csv")
+head(bus97110, 6)
 
-
-
-
-
-
-
-
-
-
-
-
-
-download.file(paste(gitadd, "/GoogleMap/raw/master/bus9700.csv", sep=""), 
-              destfile="bus9700.csv", method="curl", extra=" -L -k " )
-bus9700 <- read.csv("bus9700.csv")
-head(bus9700, 6)
-
-cairo_pdf("ggmap5.pdf", width=9, height=9)
+#cairo_pdf("ggmap5.pdf", width=9, height=9)
 seoulmap <- qmap("seoul", zoom = 11, maptype = 'toner', source = 'stamen')
 seoulmap + geom_path(mapping=aes(x = x, y = y), colour=brewer.pal(9, "Set1")[1], 
-	lwd=2, data = bus9700)
-dev.off()
+	lwd=2, data = bus911)
+#dev.off()
 
 
 lon <- c(126.7405, 127.0398)
@@ -304,13 +294,13 @@ dmap <- getDaumMap(lon, lat, zoom=NA,  maproj = "Daum")
 cairo_pdf("naver.pdf", width=8, height=7)
 par(mar=c(0,0,0,0))
 plot(nmap)
-lines(WGS842Naver(bus9700), col=brewer.pal(9, "Set1")[1], lwd=4)
+lines(WGS842Naver(bus9711), col=brewer.pal(9, "Set1")[1], lwd=4)
 dev.off()
 
 cairo_pdf("daum.pdf", width=8, height=7)
 par(mar=c(0,0,0,0))
 plot(dmap)
-lines(WGS842Daum(bus9700), col=brewer.pal(9, "Set1")[1], lwd=4)
+lines(WGS842Daum(bus9711), col=brewer.pal(9, "Set1")[1], lwd=4)
 dev.off()
 
 
