@@ -5,7 +5,7 @@ gitadd <- "https://github.com/dongikjang/"
 
 # install required packages
 reqpkgs <- c("mapdata", "RColorBrewer", "RNetCDF", "colorRamps", "rgl", "ggmap", "jpeg", "png", "plyr",
-             "scales")
+             "scales", "polyclip")
 inspkgind <- !reqpkgs %in% installed.packages()[,1] 
 if(any(inspkgind)){
   for(inspkg in reqpkgs[inspkgind]) install.packages(inspkg)
@@ -270,12 +270,10 @@ for(i in 1:6){
 #####################################################################################################
 #####################################################################################################
 # Figure 6
-
-
-download.file(paste(gitadd, "/kssletter/raw/master/bus9711.csv", sep=""), 
-              destfile="bus97110.csv", method="curl", extra=" -L -k " )
-bus9711 <- read.csv("bus97110.csv")
-head(bus97110, 6)
+download.file(paste(gitadd, "/kssletter/raw/master/9711.csv", sep=""), 
+              destfile="bus9711.csv", method="curl", extra=" -L -k " )
+bus9711 <- read.csv("bus9711.csv")
+head(bus9711, 6)
 
 #cairo_pdf("ggmap5.pdf", width=9, height=9)
 seoulmap <- qmap("seoul", zoom = 11, maptype = 'toner', source = 'stamen')
@@ -283,6 +281,8 @@ seoulmap + geom_path(mapping=aes(x = x, y = y), colour=brewer.pal(9, "Set1")[1],
 	lwd=2, data = bus911)
 #dev.off()
 
+source_https(paste(gitadd, "DaumMap/raw/master/getDaummap.R", sep=""))
+source_https(paste(gitadd, "NaverMap/raw/master/getNavermap.R", sep=""))
 
 lon <- c(126.7405, 127.0398)
 lat <- c(37.46889, 37.67667)
@@ -291,17 +291,31 @@ lon <- c(126.7405, 127.0398)
 lat <- c(37.45889, 37.68667)
 dmap <- getDaumMap(lon, lat, zoom=NA,  maproj = "Daum")
 
-cairo_pdf("naver.pdf", width=8, height=7)
+# (a)
+#cairo_pdf("naver.pdf", width=8, height=7)
 par(mar=c(0,0,0,0))
 plot(nmap)
 lines(WGS842Naver(bus9711), col=brewer.pal(9, "Set1")[1], lwd=4)
-dev.off()
+#dev.off()
+# (b)
+library(RColorBrewer)
+library(scales)
+source_https(paste(gitadd, "kssletter/raw/master/smartcardsource.R", sep=""))
+download.file(paste(gitadd, "kssletter/raw/master/9711vol.RData", sep=""),
+              destfile="9711vol.RData", method="curl", extra=" -L -k " )
+load("9711vol.RData")
 
-cairo_pdf("daum.pdf", width=8, height=7)
+out <- pathvolpoly(res, pathvol, scl=1.2)
+polygo <- out$polygo
+polyback <- out$polyback
+colval <- alpha(brewer.pal(9, "Set1"), .6)
+#cairo_pdf("daum.pdf", width=8, height=7)
 par(mar=c(0,0,0,0))
 plot(dmap)
-lines(WGS842Daum(bus9711), col=brewer.pal(9, "Set1")[1], lwd=4)
-dev.off()
+polygon(polygo/2.5, col=colval[1], border="white")
+polygon(polyback/2.5, col=colval[2], border="white")
+#dev.off()
+
 
 
 
