@@ -4,7 +4,8 @@
 gitadd <- "https://github.com/dongikjang/"
 
 # install required packages
-reqpkgs <- c("mapdata", "RColorBrewer", "RNetCDF", "colorRamps", "rgl", "ggmap", "jpeg", "png", "plyr")
+reqpkgs <- c("mapdata", "RColorBrewer", "RNetCDF", "colorRamps", "rgl", "ggmap", "jpeg", "png", "plyr",
+             "scales")
 inspkgind <- !reqpkgs %in% installed.packages()[,1] 
 if(any(inspkgind)){
   for(inspkg in reqpkgs[inspkgind]) install.packages(inspkg)
@@ -183,7 +184,104 @@ qmap("seoul", zoom = 11, maptype = 'watercolor', source = 'stamen')
 
 #####################################################################################################
 #####################################################################################################
-# Figure 6
+# Figure 5
+library(ggmap)
+download.file(paste(gitadd, "kssletter/raw/master/cleanair.csv", sep=""),
+              destfile="cleanair.csv", method="curl", extra=" -L -k ", quiet=TRUE )
+pm10 <- read.csv("cleanair.csv", stringsAsFactors = FALSE, 
+                 fileEncoding = "UTF-8", encoding = "UTF-8")
+
+
+mstodeg <- function(x){
+  x <- as.numeric(x)
+  x[1] + x[2]/60 + x[3]/3600
+}
+pm10$경도 <- unlist(lapply(strsplit(pm10$경도, ":"), mstodeg))
+pm10$위도 <- unlist(lapply(strsplit(pm10$위도, ":"), mstodeg))
+
+seoulmap <- qmap("seoul", zoom = 11, maptype = 'toner', source = 'stamen')
+seoulmap + geom_point(mapping=aes(x = 경도, y = 위도), colour=brewer.pal(9, "Set1")[1], 
+                      cex=4, data = pm10)
+# location of observation
+gm <- get_googlemap(center = "seoul", zoom = 12, filename = "ggmapTemp")
+location <- as.numeric(attr(gm, "bb"))[c(2, 1, 4, 3)]
+out <- get_stamenmap(bbox = location, zoom = 12, maptype = "toner", 
+                     crop = TRUE, messaging = FALSE, urlonly = FALSE, 
+                     filename = "ggmapTmp", color = "color")
+xmin <- attr(out, "bb")$ll.lon
+xmax <- attr(out, "bb")$ur.lon
+ymin <- attr(out, "bb")$ll.lat
+ymax <- attr(out, "bb")$ur.lat
+
+outraster <- as.raster(out)
+
+library(fields)
+fit1 <- Tps(pm10[, c("경도", "위도")], pm10$pm10, lambda=0.000001)
+result1 <- predictSurface(fit1, grid.list = NULL, extrap = FALSE, 
+                          nx = 200, ny = 200, drop.Z = TRUE)
+fit2 <- Tps(pm10[, c("경도", "위도")], pm10$pm2.5)
+result2 <- predictSurface(fit2, grid.list = NULL, extrap = FALSE, 
+                          nx = 200, ny = 200, drop.Z = TRUE)
+fit3 <- Tps(pm10[, c("경도", "위도")], pm10$no2)
+result3 <- predictSurface(fit3, grid.list = NULL, extrap = FALSE, 
+                          nx = 200, ny = 200, drop.Z = TRUE)
+fit4 <- Tps(pm10[, c("경도", "위도")], pm10$o3)
+result4 <- predictSurface(fit4, grid.list = NULL, extrap = FALSE, 
+                          nx = 200, ny = 200, drop.Z = TRUE)
+fit5 <- Tps(pm10[, c("경도", "위도")], pm10$so2)
+result5 <- predictSurface(fit5, grid.list = NULL, extrap = FALSE, 
+                          nx = 200, ny = 200, drop.Z = TRUE)
+fit6 <- Tps(pm10[, c("경도", "위도")], pm10$co)
+result6 <- predictSurface(fit6, grid.list = NULL, extrap = FALSE, 
+                          nx = 200, ny = 200, drop.Z = TRUE)
+
+library(scales)
+par(mar = c(0,0,0,0), xaxs = "i", yaxs = "i")
+plot(c(xmin, xmax), c(ymin, ymax), type = "n", xlab = "", ylab = "")
+rasterImage(outraster, xmin, ymin, xmax, ymax, interpolate = TRUE)
+image(result1, add=TRUE, col=alpha(tim.colors(64), .7))
+
+par(mar = c(0,0,0,0), xaxs = "i", yaxs = "i")
+plot(c(xmin, xmax), c(ymin, ymax), type = "n", xlab = "", ylab = "")
+rasterImage(outraster, xmin, ymin, xmax, ymax, interpolate = TRUE)
+image(result2, add=TRUE, col=alpha(tim.colors(64), .7))
+
+for(i in 1:6){
+  #cairo_pdf(paste("airseoul", i, ".pdf", sep=""), width=10, height=6.9)
+  par(mar = c(0,0,0,2), xaxs = "i", yaxs = "i")
+  mat <- matrix(1:2, ncol=2)
+  layout(mat, width=c(10,1))
+  plot(c(xmin, xmax), c(ymin, ymax), type = "n", xlab = "", ylab = "", asp=1, axes=FALSE)
+  #box()
+  rasterImage(outraster, xmin, ymin, xmax, ymax, interpolate = TRUE)
+  
+  assign("result", eval(parse(text= paste("result", i, sep=""))))
+  image(result, add=TRUE, col=alpha(tim.colors(64), .7), useRaster=TRUE)
+  zrng <- range(result$z, na.rm=TRUE)
+  zseq <- seq(zrng[1], zrng[2],, 64)
+  par(mar = c(6,0,6,3))
+  image(list(x=1, y=zseq, z=matrix(zseq, nrow=1)), useRaster=TRUE, axes=FALSE, col=tim.colors(64))
+  axis(4, cex.axis=3, padj=.5)
+  #dev.off()
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 download.file(paste(gitadd, "/GoogleMap/raw/master/bus9700.csv", sep=""), 
               destfile="bus9700.csv", method="curl", extra=" -L -k " )
 bus9700 <- read.csv("bus9700.csv")
@@ -216,20 +314,6 @@ lines(WGS842Daum(bus9700), col=brewer.pal(9, "Set1")[1], lwd=4)
 dev.off()
 
 
-library(ggmap)
-pm10 <- read.csv("~/Dropbox/pm10/Sheet 1-Table 1.csv", stringsAsFactors = FALSE, 
-            fileEncoding = "UTF-8", encoding = "UTF-8")
-
-mstodeg <- function(x){
-    x <- as.numeric(x)
-    x[1] + x[2]/60 + x[3]/3600
-}
-pm10$경도 <- unlist(lapply(strsplit(pm10$경도, ":"), mstodeg))
-pm10$위도 <- unlist(lapply(strsplit(pm10$위도, ":"), mstodeg))
-
-seoulmap <- qmap("seoul", zoom = 11, maptype = 'toner', source = 'stamen')
-seoulmap + geom_point(mapping=aes(x = 경도, y = 위도), colour=brewer.pal(9, "Set1")[1], 
-	cex=4, data = pm10)
 
 
 
