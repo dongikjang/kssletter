@@ -11,6 +11,7 @@ But "curl" and "wget" have not been installed basically on the Windows since tho
 
 You should install programs with following steps 
  0. Install Rtools (optional)
+ 
      http://cran.r-project.org/bin/windows/Rtools/
    On the install Rtool, You should check the "Edit the System Path" and 
      add the directory which has "R.exe" file something like 
@@ -19,13 +20,19 @@ You should install programs with following steps
    After install Rtool, please check the status of system path on the CMD.
    On the CMD, type 'R' (without quotation mark) then R will be excuted
      with non-gui mode on the CMD.
+
  1. downlaod  nuget Command-Line Utility at
    	http://nuget.org/nuget.exe
+
  2. On the CMD, change directory to download folder of 'nuget.exe' and install 'chocolatey'. 
    Type the following on the CMD.
 		nuget.exe install chocolatey
+
  3. On the CMD (not one the powershell) type the following
+ 
  @powershell -NoProfile -ExecutionPolicy unrestricted -Command "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))" && SET PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin
+
+
  4. Install curl and wget with following commands.s
 		choco install curl
 		choco install Wget
