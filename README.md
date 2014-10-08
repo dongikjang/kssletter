@@ -1,5 +1,5 @@
 =========
-#R-script and Data for Korean Statiscal Society Letter on October 2014
+#R-script and Data for Korean Statiscal Society Newsletter on October 2014
 
 
 ### Preliminary Steps for Windows user
