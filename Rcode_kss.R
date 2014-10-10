@@ -7,7 +7,7 @@ dir.create("KSSLetter")
 setwd("KSSLetter")
 
 gitadd <- "https://github.com/dongikjang/"
-
+gitadd2 <- "https://raw.githubusercontent.com/dongikjang/"
 # install required packages
 reqpkgs <- c("mapdata", "RColorBrewer", "RNetCDF", "colorRamps", "rgl", 
              "ggmap", "jpeg", "png", "plyr", "fields", "geosphere", 
@@ -52,6 +52,11 @@ update.packages()
 #		choco install Wget
 # Then we can use 'download.file' for HTTP Secure.
 
+if(Encoding("a") == "unknown" &  .Platform$OS.type =="windows"){
+  curlstate <- system("curl --help", invisible=TRUE) == 0L
+} else{
+  curlstate <- system("curl --help > /dev/null") == 0L
+}
 
 #####################################################################################################
 #####################################################################################################
@@ -77,8 +82,17 @@ map('worldHires', fill=TRUE, plot=T, col=cols)
 #####################################################################################################
 # Figure 2
 # (a)
-download.file(paste(gitadd, "kssletter/raw/master/etopo1.nc", sep=""),
-              destfile="etopo1.nc", method="curl", extra=" -L -k ", quiet=TRUE )
+if(curlstate){
+	download.file(paste(gitadd, "kssletter/raw/master/etopo1.nc", sep=""),
+              	  destfile="etopo1.nc", method="curl", extra=" -L -k ", quiet=TRUE)
+} else {
+	library(RCurl)
+	petop1bin <- getBinaryURL(paste(gitadd2, "kssletter/master/etopo1.nc", sep=""), encoding="UTF-8")
+	con <- file("etopo1.nc", open = "wb")
+	writeBin(petop1bin, con)
+	close(con)
+}
+
 library(RNetCDF)
 nc <- open.nc("etopo1.nc")
 tmp <- read.nc(nc)
@@ -110,8 +124,18 @@ image.plot(tmp, col=cols, asp=1, breaks=zbreaks,
 
 # (b)
 library(colorRamps)
-download.file("https://www.dropbox.com/s/6opewjw02wn0fj0/SurfaceWorld.xyz?dl=0",
-              destfile="SurfaceWorld.xyz", method="curl", extra=" -L -k ", quiet=TRUE)
+
+if(curlstate){
+	download.file("https://www.dropbox.com/s/6opewjw02wn0fj0/SurfaceWorld.xyz?dl=0",
+              	  destfile="SurfaceWorld.xyz", method="curl", extra=" -L -k ", quiet=TRUE)
+} else {
+	library(httr)
+	sfbin <- GET("https://www.dropbox.com/s/6opewjw02wn0fj0/SurfaceWorld.xyz?dl=1")
+	writeBin(sfbin$content, "SurfaceWorld.xyz")
+	rm(sfbin)
+}
+
+
 xyz <- read.delim("SurfaceWorld.xyz", header=F)
 vals <- matrix(xyz[,3], 2161,1081)
 long <- pi*matrix(xyz[,1], 2161,1081)/180
@@ -208,7 +232,19 @@ if(Encoding("a") == "unknown" &  .Platform$OS.type =="windows"){
   pm10 <- read.csv("cleanair.csv", stringsAsFactors = FALSE,
                    fileEncoding = "UTF-8", encoding = "UTF-8")
 }
+######
+# or use RCurl package
 
+require(RCurl)
+pm10csv<- getURL(paste(gitadd2, "kssletter/master/cleanair.csv", sep=""))
+if(Encoding("a") == "unknown" &  .Platform$OS.type =="windows"){
+	pm10 <- read.csv(textConnection(pm10csv), stringsAsFactors = FALSE,
+                 	 fileEncoding = "UTF-8", encoding = "EUC-KR")
+} else{
+	pm10 <- read.csv(textConnection(pm10csv), stringsAsFactors = FALSE,
+                 	 fileEncoding = "UTF-8", encoding = "UTF-8")
+}
+######
 
 mstodeg <- function(x){
   x <- as.numeric(x)
