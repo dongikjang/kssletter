@@ -199,8 +199,14 @@ qmap("seoul", zoom = 11, maptype = 'watercolor', source = 'stamen')
 library(ggmap)
 download.file(paste(gitadd, "kssletter/raw/master/cleanair.csv", sep=""),
               destfile="cleanair.csv", method="curl", extra=" -L -k ", quiet=TRUE )
-pm10 <- read.csv("cleanair.csv", stringsAsFactors = FALSE, 
-                 fileEncoding = "UTF-8", encoding = "UTF-8")
+              
+if(Encoding("a") == "unknown" &  .Platform$OS.type =="windows"){
+  pm10 <- read.csv("cleanair.csv", stringsAsFactors = FALSE,
+                   fileEncoding = "UTF-8", encoding = "EUC-KR")
+} else{
+  pm10 <- read.csv("cleanair.csv", stringsAsFactors = FALSE,
+                   fileEncoding = "UTF-8", encoding = "UTF-8")
+}
 
 
 mstodeg <- function(x){
