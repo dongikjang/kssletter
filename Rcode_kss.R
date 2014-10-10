@@ -463,7 +463,7 @@ ncs <- subset(nc, name=="서울특별시")
 #cairo_pdf("subway.pdf", width=5, height=5)
 par(mar=c(0,0,0,0))
 plot(ncs, col=gray(.7))
-source("seoul_subway2.R")
+source("seoul_subway2.R", encoding="UTF-8")
 #dev.off()
 
 
