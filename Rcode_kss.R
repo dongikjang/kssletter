@@ -242,7 +242,8 @@ if(curlstate){
 	}
 } else {
 	library(RCurl)
-	cleanair <- getURL(paste(gitadd2, "kssletter/master/cleanair.csv", sep=""))
+	cleanair <- getURL(paste(gitadd2, "kssletter/master/cleanair.csv", sep=""),
+			   cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
 	#write(cleanair, file="cleanair.csv")
 	if(Encoding("a") == "unknown" &  .Platform$OS.type =="windows"){
 	  pm10 <- read.csv(textConnection(cleanair), stringsAsFactors = FALSE,
