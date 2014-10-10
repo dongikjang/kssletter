@@ -282,7 +282,7 @@ for(i in 1:6){
 #####################################################################################################
 # Figure 6
 download.file(paste(gitadd, "/kssletter/raw/master/9711.csv", sep=""), 
-              destfile="bus9711.csv", method="curl", extra=" -L -k " )
+              destfile="bus9711.csv", method="curl", extra=" -L -k ", quiet=TRUE)
 bus9711 <- read.csv("bus9711.csv")
 head(bus9711, 6)
 
