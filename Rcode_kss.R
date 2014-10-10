@@ -285,16 +285,16 @@ result1 <- predictSurface(fit1, grid.list = NULL, extrap = FALSE,
 fit2 <- Tps(pm10[, c("경도", "위도")], pm10$pm2.5)
 result2 <- predictSurface(fit2, grid.list = NULL, extrap = FALSE, 
                           nx = 200, ny = 200, drop.Z = TRUE)
-fit3 <- Tps(pm10[, c("경도", "위도")], pm10$no2)
+fit3 <- Tps(pm10[, c("경도", "위도")], pm10$no2, lambda=0.000001)
 result3 <- predictSurface(fit3, grid.list = NULL, extrap = FALSE, 
                           nx = 200, ny = 200, drop.Z = TRUE)
-fit4 <- Tps(pm10[, c("경도", "위도")], pm10$o3)
+fit4 <- Tps(pm10[, c("경도", "위도")], pm10$o3, lambda=0.000001)
 result4 <- predictSurface(fit4, grid.list = NULL, extrap = FALSE, 
                           nx = 200, ny = 200, drop.Z = TRUE)
 fit5 <- Tps(pm10[, c("경도", "위도")], pm10$so2)
 result5 <- predictSurface(fit5, grid.list = NULL, extrap = FALSE, 
                           nx = 200, ny = 200, drop.Z = TRUE)
-fit6 <- Tps(pm10[, c("경도", "위도")], pm10$co)
+fit6 <- Tps(pm10[, c("경도", "위도")], pm10$co, lambda=0.000001)
 result6 <- predictSurface(fit6, grid.list = NULL, extrap = FALSE, 
                           nx = 200, ny = 200, drop.Z = TRUE)
 
