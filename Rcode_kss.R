@@ -166,6 +166,7 @@ library(plyr)
 source_https <- function(url, ...) {
   # load package
   require(RCurl)
+  require(plyr)
   # parse and evaluate each .R script
   l_ply(c(url, ...), function(u) {
     eval(parse(text = getURL(u, followlocation = TRUE, 
@@ -292,6 +293,8 @@ download.file(paste(gitadd, "/kssletter/raw/master/9711.csv", sep=""),
 bus9711 <- read.csv("bus9711.csv")
 head(bus9711, 6)
 
+library(RColorBrewer)
+library(scales)
 #cairo_pdf("ggmap5.pdf", width=9, height=9)
 seoulmap <- qmap("seoul", zoom = 11, maptype = 'toner', source = 'stamen')
 seoulmap + geom_path(mapping=aes(x = x, y = y), colour=brewer.pal(9, "Set1")[1], 
