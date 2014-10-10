@@ -289,7 +289,7 @@ head(bus9711, 6)
 #cairo_pdf("ggmap5.pdf", width=9, height=9)
 seoulmap <- qmap("seoul", zoom = 11, maptype = 'toner', source = 'stamen')
 seoulmap + geom_path(mapping=aes(x = x, y = y), colour=brewer.pal(9, "Set1")[1], 
-	lwd=2, data = bus911)
+	lwd=2, data = bus9711)
 #dev.off()
 
 source_https(paste(gitadd, "DaumMap/raw/master/getDaummap.R", sep=""))
