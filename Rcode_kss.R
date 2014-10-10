@@ -72,7 +72,7 @@ source_https <- function(url, ...) {
 #		choco install Wget
 # Then we can use 'download.file' for HTTP Secure.
 
-if(Encoding("a") == "unknown" &  .Platform$OS.type =="windows"){
+if(.Platform$OS.type =="windows"){
   curlstate <- system("curl --help", invisible=TRUE) == 0L
 } else{
   curlstate <- system("curl --help > /dev/null") == 0L
