@@ -135,9 +135,9 @@ cols <- c(ocean.pal(sum(zbreaks<=0)), land.pal(sum(zbreaks>0)-1))
 par(mar=c(0,0,0,3))
 library(fields)
 image.plot(tmp, col=cols, asp=1, breaks=zbreaks, 
-  useRaster=TRUE, xlab="", ylab="", axes=FALSE,
-  legend.width = 2, axis.args=list(cex.axis=1.5),
-  legend.shrink=.8, legend.mar=6)
+  	useRaster=TRUE, xlab="", ylab="", axes=FALSE,
+  	legend.width = 2, axis.args=list(cex.axis=1.5),
+  	legend.shrink=.8, legend.mar=6)
 #dev.off()
 
 # (b)
@@ -182,20 +182,20 @@ persp3d(x, y, z, col=col,specular="black", axes=FALSE, box=FALSE, xlab="", ylab=
 # (a)
 library(RgoogleMaps)
 MyMap <- GetMap(center = c(37.5665,126.978), zoom =13, size = c(640, 640), 
-	destfile = "seoul1.png", maptype="roadmap")
+		destfile = "seoul1.png", maptype="roadmap")
 PlotOnStaticMap(MyMap, size = c(640, 640))
 
 # (a)
 MyMap <- GetMap(center = c(37.5665,126.978), zoom =13, size = c(640, 640), 
-	destfile = "seoul1.png", maptype="roadmap")
+		destfile = "seoul1.png", maptype="roadmap")
 PlotOnStaticMap(MyMap, size = c(640, 640))
 # (b)
 MyMap <- GetMap(center = c(37.5665,126.978), zoom =13, size = c(640, 640), 
-	destfile = "seoul2.png", maptype="satellite")
+		destfile = "seoul2.png", maptype="satellite")
 PlotOnStaticMap(MyMap, size = c(640, 640))
 # not included in the letter
 MyMap <- GetMap(center = c(37.5665,126.978), zoom =13, size = c(640, 640), 
-	destfile = "seoul3.png", maptype="terrain")
+		destfile = "seoul3.png", maptype="terrain")
 PlotOnStaticMap(MyMap, size = c(640, 640))
 
 #####################################################################################################
@@ -246,7 +246,7 @@ if(curlstate){
 	#write(cleanair, file="cleanair.csv")
 	if(Encoding("a") == "unknown" &  .Platform$OS.type =="windows"){
 	  pm10 <- read.csv(textConnection(cleanair), stringsAsFactors = FALSE,
-                   fileEncoding = "UTF-8", encoding = "EUC-KR")
+                   	   fileEncoding = "UTF-8", encoding = "EUC-KR")
 	} else{
 	  pm10 <- read.csv(textConnection(cleanair), stringsAsFactors = FALSE,
 	                   fileEncoding = "UTF-8", encoding = "UTF-8")
@@ -334,13 +334,13 @@ for(i in 1:6){
 # Figure 6
 if(curlstate){
 	download.file(paste(gitadd2, "/kssletter/master/9711.csv", sep=""), 
-              destfile="bus9711.csv", method="curl", extra=" -L -k ", quiet=TRUE)
+        	      destfile="bus9711.csv", method="curl", extra=" -L -k ", quiet=TRUE)
 	bus9711 <- read.csv("bus9711.csv")
 } else {
 	library(RCurl)
 	b9711csv <- getURL(paste(gitadd2, "kssletter/master/9711.csv", sep=""))
 	bus9711 <- read.csv(textConnection(b9711csv), stringsAsFactors = FALSE,
-	                   fileEncoding = "UTF-8", encoding = "UTF-8")
+	                    fileEncoding = "UTF-8", encoding = "UTF-8")
 } 
 
 head(bus9711, 6)
@@ -375,10 +375,10 @@ library(scales)
 source_https(paste(gitadd2, "kssletter/master/smartcardsource.R", sep=""))
 if(curlstate){
 	download.file(paste(gitadd2, "kssletter/master/9711vol.RData", sep=""),
-              destfile="9711vol.RData", method="curl", extra=" -L -k " )
+              	      destfile="9711vol.RData", method="curl", extra=" -L -k " )
 } else {
 	download.file.Bin(paste(gitadd2, "kssletter/master/9711vol.RData", sep=""),
-					  "9711vol.RData")
+			  "9711vol.RData")
 }
 
 load("9711vol.RData")
@@ -407,18 +407,18 @@ dir.create("2012_1_0")
 
 if(curlstate){
 	download.file(paste(gitadd2, "kssletter/master/2012_1_0/temp.shp", sep=""),
-              destfile="2012_1_0/temp.shp", method="curl", extra=" -L -k " )
+              	      destfile="2012_1_0/temp.shp", method="curl", extra=" -L -k " )
 	download.file(paste(gitadd2, "kssletter/master/2012_1_0/temp.dbf", sep=""),
 	              destfile="2012_1_0/temp.dbf", method="curl", extra=" -L -k " )
 	download.file(paste(gitadd2, "kssletter/master/2012_1_0/temp.shx", sep=""),
 	              destfile="2012_1_0/temp.shx", method="curl", extra=" -L -k " )
 } else {
 	download.file.Bin(paste(gitadd2, "kssletter/master/2012_1_0/temp.shp", sep=""), 
-					  "2012_1_0/temp.shp")
+			  "2012_1_0/temp.shp")
 	download.file.Bin(paste(gitadd2, "kssletter/master/2012_1_0/temp.dbf", sep=""), 
-					  "2012_1_0/temp.dbf")
+			  "2012_1_0/temp.dbf")
 	download.file.Bin(paste(gitadd2, "kssletter/master/2012_1_0/temp.shx", sep=""), 
-					  "2012_1_0/temp.shx")
+			  "2012_1_0/temp.shx")
 }
 
 
@@ -437,16 +437,16 @@ plot(nc, col=cols, lwd=.1, border=1)
 library(plyr)
 val2col2 <- function(z, zlim, col = heat.colors(12), breaks){
   if(!missing(breaks)){
-    if(length(breaks) != (length(col)+1)){stop("must have one more break than colour")}
+    	if(length(breaks) != (length(col)+1)){stop("must have one more break than colour")}
   }
   if(missing(breaks) & !missing(zlim)){
-    #breaks <- seq(zlim[1], zlim[2], length.out=(length(col)+1)) 
-    breaks <- seq(zlim[1], zlim[2], length.out=(length(col))) 
+    	#breaks <- seq(zlim[1], zlim[2], length.out=(length(col)+1)) 
+    	breaks <- seq(zlim[1], zlim[2], length.out=(length(col))) 
   }
   if(missing(breaks) & missing(zlim)){
-    zlim <- range(z, na.rm=TRUE)
-    breaks <- seq(zlim[1], zlim[2], length.out=(length(col))) 
-    #breaks <- seq(zlim[1], zlim[2], length.out=(length(col)+1)) 
+    	zlim <- range(z, na.rm=TRUE)
+    	breaks <- seq(zlim[1], zlim[2], length.out=(length(col))) 
+    	#breaks <- seq(zlim[1], zlim[2], length.out=(length(col)+1)) 
   }
   colorlevels <- col[((as.vector(z)-breaks[1])/(range(breaks)[2]-range(breaks)[1]))*(length(breaks)-1)+1] # assign colors to heights for each point
   colorlevels[z > zlim[2]] <- col[length(col)]
@@ -457,10 +457,10 @@ library(data.table)
 
 if(curlstate){
 	download.file(paste(gitadd2, "kssletter/master/cencus2010_den_wgs1984.RData", sep=""),
-              destfile="cencus2010_den_wgs1984.RData", method="curl", extra=" -L -k ", quiet=TRUE)
+              	      destfile="cencus2010_den_wgs1984.RData", method="curl", extra=" -L -k ", quiet=TRUE)
 } else {
 	download.file.Bin(paste(gitadd2, "kssletter/master/cencus2010_den_wgs1984.RData", sep=""),
-              destfile="cencus2010_den_wgs1984.RData")
+              		  destfile="cencus2010_den_wgs1984.RData")
 }
 
 
@@ -472,18 +472,18 @@ out2 <- out[ind]
 dir.create("2012_2_11230")
 if(curlstate){
 	download.file(paste(gitadd2, "kssletter/master/2012_2_11230/temp.shp", sep=""),
-              destfile="2012_2_11230/temp.shp", method="curl", extra=" -L -k " )
+              	      destfile="2012_2_11230/temp.shp", method="curl", extra=" -L -k " )
 	download.file(paste(gitadd2, "kssletter/master/2012_2_11230/temp.dbf", sep=""),
-              destfile="2012_2_11230/temp.dbf", method="curl", extra=" -L -k " )
+              	      destfile="2012_2_11230/temp.dbf", method="curl", extra=" -L -k " )
 	download.file(paste(gitadd2, "kssletter/master/2012_2_11230/temp.shx", sep=""),
-              destfile="2012_2_11230/temp.shx", method="curl", extra=" -L -k " )
+        	      destfile="2012_2_11230/temp.shx", method="curl", extra=" -L -k " )
 } else {
 	download.file.Bin(paste(gitadd2, "kssletter/master/2012_2_11230/temp.shp", sep=""),
-              destfile="2012_2_11230/temp.shp")
+              		  destfile="2012_2_11230/temp.shp")
 	download.file.Bin(paste(gitadd2, "kssletter/master/2012_2_11230/temp.dbf", sep=""),
-              destfile="2012_2_11230/temp.dbf")
+              		  destfile="2012_2_11230/temp.dbf")
 	download.file.Bin(paste(gitadd2, "kssletter/master/2012_2_11230/temp.shx", sep=""),
-              destfile="2012_2_11230/temp.shx")
+              		  destfile="2012_2_11230/temp.shx")
 }
 
     
@@ -525,27 +525,27 @@ mtext(expression(group("(", bold(명/km^2), ")")), side=1, line=2.1, at=1.07, ce
 # Based on Figure 8
 if(curlstate){
 	download.file(paste(gitadd2, "kssletter/master/seoul_subway2.R", sep=""),
-              destfile="seoul_subway2.R", method="curl", extra=" -L -k ")
+              	      destfile="seoul_subway2.R", method="curl", extra=" -L -k ")
 } else {
 	download.file.Bin(paste(gitadd2, "kssletter/master/seoul_subway2.R", sep=""),
-              destfile="seoul_subway2.R")
+              		  destfile="seoul_subway2.R")
 }
 
 if(Encoding("a") == "unknown" & .Platform$OS.type =="windows"){
 	if(curlstate){
 		download.file(paste(gitadd2, "kssletter/master/SeoulSubwayShp2.zip", sep=""),
-              	      destfile="SeoulSubwayShp.zip", method="curl", extra=" -L -k ")
+              	      	      destfile="SeoulSubwayShp.zip", method="curl", extra=" -L -k ")
 	} else {
 		download.file.Bin(paste(gitadd2, "kssletter/master/SeoulSubwayShp2.zip", sep=""),
-              	      destfile="SeoulSubwayShp.zip")
+              	      		  destfile="SeoulSubwayShp.zip")
 	}
 } else {
 	if(curlstate){
 		download.file(paste(gitadd2, "kssletter/master/SeoulSubwayShp.zip", sep=""),
-              	      destfile="SeoulSubwayShp.zip", method="curl", extra=" -L -k ")
+              	      	      destfile="SeoulSubwayShp.zip", method="curl", extra=" -L -k ")
 	} else {
 		download.file.Bin(paste(gitadd2, "kssletter/master/SeoulSubwayShp.zip", sep=""),
-              	      destfile="SeoulSubwayShp.zip")
+              	      		  destfile="SeoulSubwayShp.zip")
 	}
 }
 unzip("SeoulSubwayShp.zip", exdir="SeoulSubwayShp")
