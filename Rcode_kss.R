@@ -87,7 +87,9 @@ if(curlstate){
               	  destfile="etopo1.nc", method="curl", extra=" -L -k ", quiet=TRUE)
 } else {
 	library(RCurl)
-	petop1bin <- getBinaryURL(paste(gitadd2, "kssletter/master/etopo1.nc", sep=""), encoding="UTF-8")
+	petop1bin <- getBinaryURL(paste(gitadd2, "kssletter/master/etopo1.nc", sep=""), 
+							  encoding="UTF-8",
+							  cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
 	con <- file("etopo1.nc", open = "wb")
 	writeBin(petop1bin, con)
 	close(con)
