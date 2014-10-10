@@ -21,6 +21,26 @@ if(any(inspkgind)){
 
 update.packages()
 
+
+download.file.Bin <- function(url, destfile, encoding="UTF-8"){
+	require(RCurl)
+	binfile <- getBinaryURL(url, encoding=encoding,
+                            cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
+	con <- file(destfile, open = "wb")
+	writeBin(binfile, con)
+	close(con)
+}
+source_https <- function(url, ...) {
+  # load package
+  require(RCurl)
+  require(plyr)
+  # parse and evaluate each .R script
+  l_ply(c(url, ...), function(u) {
+    eval(parse(text = getURL(u, followlocation = TRUE, 
+                             cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))), 
+         envir = .GlobalEnv)
+  })
+}
 # sessionInfo()
 #####################################################################################################
 #####################################################################################################
@@ -83,16 +103,12 @@ map('worldHires', fill=TRUE, plot=T, col=cols)
 # Figure 2
 # (a)
 if(curlstate){
-	download.file(paste(gitadd, "kssletter/raw/master/etopo1.nc", sep=""),
+	download.file(paste(gitadd2, "kssletter/master/etopo1.nc", sep=""),
               	  destfile="etopo1.nc", method="curl", extra=" -L -k ", quiet=TRUE)
 } else {
 	library(RCurl)
-	petop1bin <- getBinaryURL(paste(gitadd2, "kssletter/master/etopo1.nc", sep=""), 
-                              encoding="UTF-8",
-                              cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
-	con <- file("etopo1.nc", open = "wb")
-	writeBin(petop1bin, con)
-	close(con)
+	download.file.Bin(paste(gitadd2, "kssletter/master/etopo1.nc", sep=""),
+					  "etopo1.nc")
 }
 
 library(RNetCDF)
@@ -189,18 +205,8 @@ library(ggmap)
 library(jpeg)
 library(png)
 library(plyr)
-source_https <- function(url, ...) {
-  # load package
-  require(RCurl)
-  require(plyr)
-  # parse and evaluate each .R script
-  l_ply(c(url, ...), function(u) {
-    eval(parse(text = getURL(u, followlocation = TRUE, 
-                             cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))), 
-         envir = .GlobalEnv)
-  })
-}
-source_https(paste(gitadd, "GoogleMap/raw/master/StamenWatercolor.R", sep=""))
+
+source_https(paste(gitadd2, "GoogleMap/master/StamenWatercolor.R", sep=""))
 
 # (a)
 #cairo_pdf("ggmap1.pdf", width=6, height=6)
@@ -224,29 +230,29 @@ qmap("seoul", zoom = 11, maptype = 'watercolor', source = 'stamen')
 #####################################################################################################
 # Figure 5
 library(ggmap)
-download.file(paste(gitadd, "kssletter/raw/master/cleanair.csv", sep=""),
+if(curlstate){
+	download.file(paste(gitadd2, "kssletter/master/cleanair.csv", sep=""),
               destfile="cleanair.csv", method="curl", extra=" -L -k ", quiet=TRUE )
-              
-if(Encoding("a") == "unknown" &  .Platform$OS.type =="windows"){
-  pm10 <- read.csv("cleanair.csv", stringsAsFactors = FALSE,
+	if(Encoding("a") == "unknown" &  .Platform$OS.type =="windows"){
+	  pm10 <- read.csv("cleanair.csv", stringsAsFactors = FALSE,
+	                   fileEncoding = "UTF-8", encoding = "EUC-KR")
+	} else{
+	  pm10 <- read.csv("cleanair.csv", stringsAsFactors = FALSE,
+	                   fileEncoding = "UTF-8", encoding = "UTF-8")
+	}
+} else {
+	library(RCurl)
+	cleanair <- getURL(paste(gitadd2, "kssletter/master/cleanair.csv", sep=""))
+	#write(cleanair, file="cleanair.csv")
+	if(Encoding("a") == "unknown" &  .Platform$OS.type =="windows"){
+	  pm10 <- read.csv(textConnection(cleanair), stringsAsFactors = FALSE,
                    fileEncoding = "UTF-8", encoding = "EUC-KR")
-} else{
-  pm10 <- read.csv("cleanair.csv", stringsAsFactors = FALSE,
-                   fileEncoding = "UTF-8", encoding = "UTF-8")
-}
-######
-# or use RCurl package
+	} else{
+	  pm10 <- read.csv(textConnection(cleanair), stringsAsFactors = FALSE,
+	                   fileEncoding = "UTF-8", encoding = "UTF-8")
+	}	
+}         
 
-require(RCurl)
-pm10csv<- getURL(paste(gitadd2, "kssletter/master/cleanair.csv", sep=""))
-if(Encoding("a") == "unknown" &  .Platform$OS.type =="windows"){
-	pm10 <- read.csv(textConnection(pm10csv), stringsAsFactors = FALSE,
-                 	 fileEncoding = "UTF-8", encoding = "EUC-KR")
-} else{
-	pm10 <- read.csv(textConnection(pm10csv), stringsAsFactors = FALSE,
-                 	 fileEncoding = "UTF-8", encoding = "UTF-8")
-}
-######
 
 mstodeg <- function(x){
   x <- as.numeric(x)
@@ -326,9 +332,17 @@ for(i in 1:6){
 #####################################################################################################
 #####################################################################################################
 # Figure 6
-download.file(paste(gitadd, "/kssletter/raw/master/9711.csv", sep=""), 
+if(curlstate){
+	download.file(paste(gitadd2, "/kssletter/master/9711.csv", sep=""), 
               destfile="bus9711.csv", method="curl", extra=" -L -k ", quiet=TRUE)
-bus9711 <- read.csv("bus9711.csv")
+	bus9711 <- read.csv("bus9711.csv")
+} else {
+	library(RCurl)
+	b9711csv <- getURL(paste(gitadd2, "kssletter/master/9711.csv", sep=""))
+	bus9711 <- read.csv(textConnection(b9711csv), stringsAsFactors = FALSE,
+	                   fileEncoding = "UTF-8", encoding = "UTF-8")
+} 
+
 head(bus9711, 6)
 
 library(RColorBrewer)
@@ -339,8 +353,8 @@ seoulmap + geom_path(mapping=aes(x = x, y = y), colour=brewer.pal(9, "Set1")[1],
 	lwd=2, data = bus9711)
 #dev.off()
 
-source_https(paste(gitadd, "DaumMap/raw/master/getDaummap.R", sep=""))
-source_https(paste(gitadd, "NaverMap/raw/master/getNavermap.R", sep=""))
+source_https(paste(gitadd2, "DaumMap/master/getDaummap.R", sep=""))
+source_https(paste(gitadd2, "NaverMap/master/getNavermap.R", sep=""))
 
 lon <- c(126.7405, 127.0398)
 lat <- c(37.46889, 37.67667)
@@ -358,9 +372,15 @@ lines(WGS842Naver(bus9711), col=brewer.pal(9, "Set1")[1], lwd=4)
 # (b)
 library(RColorBrewer)
 library(scales)
-source_https(paste(gitadd, "kssletter/raw/master/smartcardsource.R", sep=""))
-download.file(paste(gitadd, "kssletter/raw/master/9711vol.RData", sep=""),
+source_https(paste(gitadd2, "kssletter/master/smartcardsource.R", sep=""))
+if(curlstate){
+	download.file(paste(gitadd2, "kssletter/master/9711vol.RData", sep=""),
               destfile="9711vol.RData", method="curl", extra=" -L -k " )
+} else {
+	download.file.Bin(paste(gitadd2, "kssletter/master/9711vol.RData", sep=""),
+					  "9711vol.RData")
+}
+
 load("9711vol.RData")
 
 out <- pathvolpoly(res, pathvol, scl=1.2)
@@ -384,12 +404,24 @@ library(RColorBrewer)
 
 # (a)
 dir.create("2012_1_0")
-download.file(paste(gitadd, "kssletter/raw/master/2012_1_0/temp.shp", sep=""),
+
+if(curlstate){
+	download.file(paste(gitadd2, "kssletter/master/2012_1_0/temp.shp", sep=""),
               destfile="2012_1_0/temp.shp", method="curl", extra=" -L -k " )
-download.file(paste(gitadd, "kssletter/raw/master/2012_1_0/temp.dbf", sep=""),
-              destfile="2012_1_0/temp.dbf", method="curl", extra=" -L -k " )
-download.file(paste(gitadd, "kssletter/raw/master/2012_1_0/temp.shx", sep=""),
-              destfile="2012_1_0/temp.shx", method="curl", extra=" -L -k " )
+	download.file(paste(gitadd2, "kssletter/master/2012_1_0/temp.dbf", sep=""),
+	              destfile="2012_1_0/temp.dbf", method="curl", extra=" -L -k " )
+	download.file(paste(gitadd2, "kssletter/master/2012_1_0/temp.shx", sep=""),
+	              destfile="2012_1_0/temp.shx", method="curl", extra=" -L -k " )
+} else {
+	download.file.Bin(paste(gitadd2, "kssletter/master/2012_1_0/temp.shp", sep=""), 
+					  "2012_1_0/temp.shp")
+	download.file.Bin(paste(gitadd2, "kssletter/master/2012_1_0/temp.dbf", sep=""), 
+					  "2012_1_0/temp.dbf")
+	download.file.Bin(paste(gitadd2, "kssletter/master/2012_1_0/temp.shx", sep=""), 
+					  "2012_1_0/temp.shx")
+}
+
+
 
 proj4val <- "+proj=tmerc +lat_0=38 +lon_0=127.0028902777778 +k=1 +x_0=200000 +y_0=500000 +ellps=bessel
 +units=m +no_defs +towgs84=-115.80,474.99,674.11,1.16,-2.31,-1.63,6.43"
@@ -422,8 +454,15 @@ val2col2 <- function(z, zlim, col = heat.colors(12), breaks){
 }
 
 library(data.table)
-download.file(paste(gitadd, "kssletter/raw/master/cencus2010_den_wgs1984.RData", sep=""),
-              destfile="cencus2010_den_wgs1984.RData", method="curl", extra=" -L -k " )
+
+if(curlstate){
+	download.file(paste(gitadd2, "kssletter/master/cencus2010_den_wgs1984.RData", sep=""),
+              destfile="cencus2010_den_wgs1984.RData", method="curl", extra=" -L -k ", quiet=TRUE)
+} else {
+	download.file.Bin(paste(gitadd2, "kssletter/master/cencus2010_den_wgs1984.RData", sep=""),
+              destfile="cencus2010_den_wgs1984.RData")
+}
+
 
 load('cencus2010_den_wgs1984.RData')
 name <- unlist(lapply(out, function(x) x$name))
@@ -431,14 +470,23 @@ ind <- which(substring(name, 1, 5) == 11230)
 out2 <- out[ind]
 
 dir.create("2012_2_11230")
-download.file(paste(gitadd, "kssletter/raw/master/2012_2_11230/temp.shp", sep=""),
+if(curlstate){
+	download.file(paste(gitadd2, "kssletter/master/2012_2_11230/temp.shp", sep=""),
               destfile="2012_2_11230/temp.shp", method="curl", extra=" -L -k " )
-download.file(paste(gitadd, "kssletter/raw/master/2012_2_11230/temp.dbf", sep=""),
+	download.file(paste(gitadd2, "kssletter/master/2012_2_11230/temp.dbf", sep=""),
               destfile="2012_2_11230/temp.dbf", method="curl", extra=" -L -k " )
-download.file(paste(gitadd, "kssletter/raw/master/2012_2_11230/temp.shx", sep=""),
+	download.file(paste(gitadd2, "kssletter/master/2012_2_11230/temp.shx", sep=""),
               destfile="2012_2_11230/temp.shx", method="curl", extra=" -L -k " )
-              
-              
+} else {
+	download.file.Bin(paste(gitadd2, "kssletter/master/2012_2_11230/temp.shp", sep=""),
+              destfile="2012_2_11230/temp.shp")
+	download.file.Bin(paste(gitadd2, "kssletter/master/2012_2_11230/temp.dbf", sep=""),
+              destfile="2012_2_11230/temp.dbf")
+	download.file.Bin(paste(gitadd2, "kssletter/master/2012_2_11230/temp.shx", sep=""),
+              destfile="2012_2_11230/temp.shx")
+}
+
+    
 #png("census2010_den.png", width=2500, height=2000)
 #cairo_pdf("census2010_den.pdf", width=12.5, height=10)
 mat <- matrix(1:2, nrow=2)
@@ -475,15 +523,30 @@ mtext(expression(group("(", bold(명/km^2), ")")), side=1, line=2.1, at=1.07, ce
 #####################################################################################################
 # Figure 9
 # Based on Figure 8
-download.file(paste(gitadd, "kssletter/raw/master/seoul_subway2.R", sep=""),
-              destfile="seoul_subway2.R", method="curl", extra=" -L -k " )
-              
-if(Encoding("a") == "unknown" & .Platform$OS.type =="windows"){
-	download.file(paste(gitadd, "kssletter/raw/master/SeoulSubwayShp2.zip", sep=""),
-              	      destfile="SeoulSubwayShp.zip", method="curl", extra=" -L -k " )
+if(curlstate){
+	download.file(paste(gitadd2, "kssletter/master/seoul_subway2.R", sep=""),
+              destfile="seoul_subway2.R", method="curl", extra=" -L -k ")
 } else {
-	download.file(paste(gitadd, "kssletter/raw/master/SeoulSubwayShp.zip", sep=""),
-              	      destfile="SeoulSubwayShp.zip", method="curl", extra=" -L -k " )
+	download.file.Bin(paste(gitadd2, "kssletter/master/seoul_subway2.R", sep=""),
+              destfile="seoul_subway2.R")
+}
+
+if(Encoding("a") == "unknown" & .Platform$OS.type =="windows"){
+	if(curlstate){
+		download.file(paste(gitadd2, "kssletter/master/SeoulSubwayShp2.zip", sep=""),
+              	      destfile="SeoulSubwayShp.zip", method="curl", extra=" -L -k ")
+	} else {
+		download.file.Bin(paste(gitadd2, "kssletter/master/SeoulSubwayShp2.zip", sep=""),
+              	      destfile="SeoulSubwayShp.zip")
+	}
+} else {
+	if(curlstate){
+		download.file(paste(gitadd2, "kssletter/master/SeoulSubwayShp.zip", sep=""),
+              	      destfile="SeoulSubwayShp.zip", method="curl", extra=" -L -k ")
+	} else {
+		download.file.Bin(paste(gitadd2, "kssletter/master/SeoulSubwayShp.zip", sep=""),
+              	      destfile="SeoulSubwayShp.zip")
+	}
 }
 unzip("SeoulSubwayShp.zip", exdir="SeoulSubwayShp")
 shpfolder <- "SeoulSubwayShp"
