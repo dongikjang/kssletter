@@ -391,6 +391,16 @@ load('cencus2010_den_wgs1984.RData')
 name <- unlist(lapply(out, function(x) x$name))
 ind <- which(substring(name, 1, 5) == 11230)
 out2 <- out[ind]
+
+dir.create("2012_2_11230")
+download.file(paste(gitadd, "kssletter/raw/master/2012_2_11230/temp.shp", sep=""),
+              destfile="2012_2_11230/temp.shp", method="curl", extra=" -L -k " )
+download.file(paste(gitadd, "kssletter/raw/master/2012_2_11230/temp.dbf", sep=""),
+              destfile="2012_2_11230/temp.dbf", method="curl", extra=" -L -k " )
+download.file(paste(gitadd, "kssletter/raw/master/2012_2_11230/temp.shx", sep=""),
+              destfile="2012_2_11230/temp.shx", method="curl", extra=" -L -k " )
+              
+              
 #png("census2010_den.png", width=2500, height=2000)
 #cairo_pdf("census2010_den.pdf", width=12.5, height=10)
 mat <- matrix(1:2, nrow=2)
@@ -398,7 +408,7 @@ layout(mat, height=c(9,2))
 par(mar=c(1,4,0,2), family="NanumGothic")
 proj4val <- "+proj=tmerc +lat_0=38 +lon_0=127.0028902777778 +k=1 +x_0=200000 +y_0=500000 +ellps=bessel
              +units=m +no_defs +towgs84=-115.80,474.99,674.11,1.16,-2.31,-1.63,6.43"
-nc <- readShapePoly("~/Dropbox/KSS_Letter/Fig/2012_2_11230/temp.shp", proj4string=CRS("+init=epsg:2097"))
+nc <- readShapePoly("2012_2_11230/temp.shp", proj4string=CRS("+init=epsg:2097"))
 nc <- spTransform(nc, CRS("+init=epsg:4326")) 
 plot(nc, col=gray(.9), border=gray(.9))
 zlim <- range(unlist(lapply(out, function(x) x[[3]])), na.rm=TRUE)
