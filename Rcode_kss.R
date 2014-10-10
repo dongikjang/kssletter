@@ -439,8 +439,14 @@ mtext(expression(group("(", bold(명/km^2), ")")), side=1, line=2.1, at=1.07, ce
 # Based on Figure 8
 download.file(paste(gitadd, "kssletter/raw/master/seoul_subway2.R", sep=""),
               destfile="seoul_subway2.R", method="curl", extra=" -L -k " )
-download.file(paste(gitadd, "kssletter/raw/master/SeoulSubwayShp.zip", sep=""),
-              destfile="SeoulSubwayShp.zip", method="curl", extra=" -L -k " )
+              
+if(Encoding("a") == "unknown" & .Platform$OS.type =="windows"){
+	download.file(paste(gitadd, "kssletter/raw/master/SeoulSubwayShp2.zip", sep=""),
+              	      destfile="SeoulSubwayShp.zip", method="curl", extra=" -L -k " )
+} else {
+	download.file(paste(gitadd, "kssletter/raw/master/SeoulSubwayShp.zip", sep=""),
+              	      destfile="SeoulSubwayShp.zip", method="curl", extra=" -L -k " )
+}
 unzip("SeoulSubwayShp.zip", exdir="SeoulSubwayShp")
 shpfolder <- "SeoulSubwayShp"
 
