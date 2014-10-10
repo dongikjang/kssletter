@@ -339,7 +339,8 @@ if(curlstate){
 	bus9711 <- read.csv("bus9711.csv")
 } else {
 	library(RCurl)
-	b9711csv <- getURL(paste(gitadd2, "kssletter/master/9711.csv", sep=""))
+	b9711csv <- getURL(paste(gitadd2, "kssletter/master/9711.csv", sep=""),
+			   cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
 	bus9711 <- read.csv(textConnection(b9711csv), stringsAsFactors = FALSE,
 	                    fileEncoding = "UTF-8", encoding = "UTF-8")
 } 
