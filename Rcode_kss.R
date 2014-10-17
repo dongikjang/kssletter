@@ -311,7 +311,7 @@ rasterImage(outraster, xmin, ymin, xmax, ymax, interpolate = TRUE)
 image(result2, add=TRUE, col=alpha(tim.colors(64), .7))
 
 for(i in 1:6){
-  cairo_pdf(paste("airseoul", i, ".pdf", sep=""), width=10, height=6.9)
+  #cairo_pdf(paste("airseoul", i, ".pdf", sep=""), width=10, height=6.9)
   par(mar = c(0,0,0,2), xaxs = "i", yaxs = "i")
   mat <- matrix(1:2, ncol=2)
   layout(mat, width=c(10,1))
@@ -326,7 +326,7 @@ for(i in 1:6){
   par(mar = c(6,0,6,3))
   image(list(x=1, y=zseq, z=matrix(zseq, nrow=1)), useRaster=TRUE, axes=FALSE, col=tim.colors(64))
   axis(4, cex.axis=3, padj=.5)
-  dev.off()
+  #dev.off()
 }
 
 
@@ -378,7 +378,7 @@ library(scales)
 source_https(paste(gitadd2, "kssletter/master/smartcardsource.R", sep=""))
 if(curlstate){
 	download.file(paste(gitadd2, "kssletter/master/9711vol.RData", sep=""),
-              	      destfile="9711vol.RData", method="curl", extra=" -L -k " )
+              	      destfile="9711vol.RData", method="curl", extra=" -L -k ", quiet=TRUE)
 } else {
 	download.file.Bin(paste(gitadd2, "kssletter/master/9711vol.RData", sep=""),
 			  "9711vol.RData")
@@ -410,11 +410,11 @@ dir.create("2012_1_0")
 
 if(curlstate){
 	download.file(paste(gitadd2, "kssletter/master/2012_1_0/temp.shp", sep=""),
-              	      destfile="2012_1_0/temp.shp", method="curl", extra=" -L -k " )
+              	      destfile="2012_1_0/temp.shp", method="curl", extra=" -L -k ", quiet=TRUE)
 	download.file(paste(gitadd2, "kssletter/master/2012_1_0/temp.dbf", sep=""),
-	              destfile="2012_1_0/temp.dbf", method="curl", extra=" -L -k " )
+	              destfile="2012_1_0/temp.dbf", method="curl", extra=" -L -k ", quiet=TRUE)
 	download.file(paste(gitadd2, "kssletter/master/2012_1_0/temp.shx", sep=""),
-	              destfile="2012_1_0/temp.shx", method="curl", extra=" -L -k " )
+	              destfile="2012_1_0/temp.shx", method="curl", extra=" -L -k ", quiet=TRUE)
 } else {
 	download.file.Bin(paste(gitadd2, "kssletter/master/2012_1_0/temp.shp", sep=""), 
 			  "2012_1_0/temp.shp")
@@ -528,7 +528,7 @@ mtext(expression(group("(", bold(명/km^2), ")")), side=1, line=2.1, at=1.07, ce
 # Based on Figure 8
 if(curlstate){
 	download.file(paste(gitadd2, "kssletter/master/seoul_subway2.R", sep=""),
-              	      destfile="seoul_subway2.R", method="curl", extra=" -L -k ")
+              	      destfile="seoul_subway2.R", method="curl", extra=" -L -k ", quiet=TRUE)
 } else {
 	download.file.Bin(paste(gitadd2, "kssletter/master/seoul_subway2.R", sep=""),
               		  destfile="seoul_subway2.R")
@@ -537,7 +537,7 @@ if(curlstate){
 if(Encoding("a") == "unknown" & .Platform$OS.type =="windows"){
 	if(curlstate){
 		download.file(paste(gitadd2, "kssletter/master/SeoulSubwayShp2.zip", sep=""),
-              	      	      destfile="SeoulSubwayShp.zip", method="curl", extra=" -L -k ")
+              	      	      destfile="SeoulSubwayShp.zip", method="curl", extra=" -L -k ", quiet=TRUE)
 	} else {
 		download.file.Bin(paste(gitadd2, "kssletter/master/SeoulSubwayShp2.zip", sep=""),
               	      		  destfile="SeoulSubwayShp.zip")
@@ -545,7 +545,7 @@ if(Encoding("a") == "unknown" & .Platform$OS.type =="windows"){
 } else {
 	if(curlstate){
 		download.file(paste(gitadd2, "kssletter/master/SeoulSubwayShp.zip", sep=""),
-              	      	      destfile="SeoulSubwayShp.zip", method="curl", extra=" -L -k ")
+              	      	      destfile="SeoulSubwayShp.zip", method="curl", extra=" -L -k ", quiet=TRUE)
 	} else {
 		download.file.Bin(paste(gitadd2, "kssletter/master/SeoulSubwayShp.zip", sep=""),
               	      		  destfile="SeoulSubwayShp.zip")
