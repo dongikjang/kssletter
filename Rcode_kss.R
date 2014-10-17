@@ -475,11 +475,11 @@ out2 <- out[ind]
 dir.create("2012_2_11230")
 if(curlstate){
 	download.file(paste(gitadd2, "kssletter/master/2012_2_11230/temp.shp", sep=""),
-              	      destfile="2012_2_11230/temp.shp", method="curl", extra=" -L -k " )
+              	      destfile="2012_2_11230/temp.shp", method="curl", extra=" -L -k ", quiet=TRUE)
 	download.file(paste(gitadd2, "kssletter/master/2012_2_11230/temp.dbf", sep=""),
-              	      destfile="2012_2_11230/temp.dbf", method="curl", extra=" -L -k " )
+              	      destfile="2012_2_11230/temp.dbf", method="curl", extra=" -L -k ", quiet=TRUE)
 	download.file(paste(gitadd2, "kssletter/master/2012_2_11230/temp.shx", sep=""),
-        	      destfile="2012_2_11230/temp.shx", method="curl", extra=" -L -k " )
+        	      destfile="2012_2_11230/temp.shx", method="curl", extra=" -L -k ", quiet=TRUE)
 } else {
 	download.file.Bin(paste(gitadd2, "kssletter/master/2012_2_11230/temp.shp", sep=""),
               		  destfile="2012_2_11230/temp.shp")
