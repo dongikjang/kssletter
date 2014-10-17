@@ -280,22 +280,22 @@ ymax <- attr(out, "bb")$ur.lat
 outraster <- as.raster(out)
 
 library(fields)
-fit1 <- Tps(pm10[, c("경도", "위도")], pm10$pm10, lambda=0.000001)
+fit1 <- Tps(pm10[, c("경도", "위도")], pm10$pm10, lambda=0.0000001)
 result1 <- predictSurface(fit1, grid.list = NULL, extrap = FALSE, 
                           nx = 200, ny = 200, drop.Z = TRUE)
 fit2 <- Tps(pm10[, c("경도", "위도")], pm10$pm2.5)
 result2 <- predictSurface(fit2, grid.list = NULL, extrap = FALSE, 
                           nx = 200, ny = 200, drop.Z = TRUE)
-fit3 <- Tps(pm10[, c("경도", "위도")], pm10$no2, lambda=0.000001)
+fit3 <- Tps(pm10[, c("경도", "위도")], pm10$no2, lambda=0.0000001)
 result3 <- predictSurface(fit3, grid.list = NULL, extrap = FALSE, 
                           nx = 200, ny = 200, drop.Z = TRUE)
-fit4 <- Tps(pm10[, c("경도", "위도")], pm10$o3, lambda=0.000001)
+fit4 <- Tps(pm10[, c("경도", "위도")], pm10$o3, lambda=0.0000001)
 result4 <- predictSurface(fit4, grid.list = NULL, extrap = FALSE, 
                           nx = 200, ny = 200, drop.Z = TRUE)
 fit5 <- Tps(pm10[, c("경도", "위도")], pm10$so2)
 result5 <- predictSurface(fit5, grid.list = NULL, extrap = FALSE, 
                           nx = 200, ny = 200, drop.Z = TRUE)
-fit6 <- Tps(pm10[, c("경도", "위도")], pm10$co, lambda=0.000001)
+fit6 <- Tps(pm10[, c("경도", "위도")], pm10$co, lambda=0.0000001)
 result6 <- predictSurface(fit6, grid.list = NULL, extrap = FALSE, 
                           nx = 200, ny = 200, drop.Z = TRUE)
 
@@ -311,7 +311,7 @@ rasterImage(outraster, xmin, ymin, xmax, ymax, interpolate = TRUE)
 image(result2, add=TRUE, col=alpha(tim.colors(64), .7))
 
 for(i in 1:6){
-  #cairo_pdf(paste("airseoul", i, ".pdf", sep=""), width=10, height=6.9)
+  cairo_pdf(paste("airseoul", i, ".pdf", sep=""), width=10, height=6.9)
   par(mar = c(0,0,0,2), xaxs = "i", yaxs = "i")
   mat <- matrix(1:2, ncol=2)
   layout(mat, width=c(10,1))
@@ -326,7 +326,7 @@ for(i in 1:6){
   par(mar = c(6,0,6,3))
   image(list(x=1, y=zseq, z=matrix(zseq, nrow=1)), useRaster=TRUE, axes=FALSE, col=tim.colors(64))
   axis(4, cex.axis=3, padj=.5)
-  #dev.off()
+  dev.off()
 }
 
 
