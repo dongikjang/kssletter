@@ -334,7 +334,7 @@ for(i in 1:6){
 #####################################################################################################
 # Figure 6
 if(curlstate){
-	download.file(paste(gitadd2, "/kssletter/master/9711.csv", sep=""), 
+	download.file(paste(gitadd2, "kssletter/master/9711.csv", sep=""), 
         	      destfile="bus9711.csv", method="curl", extra=" -L -k ", quiet=TRUE)
 	bus9711 <- read.csv("bus9711.csv")
 } else {
