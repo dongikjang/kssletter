@@ -43,5 +43,3 @@ for(i in 1:9){
   nc22 <- spTransform(nc2, CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +units=m +no_defs"))
   lines(nc22, col=colss[i], lwd=1)
 }
-
-
