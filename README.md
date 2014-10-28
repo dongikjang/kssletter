@@ -19,9 +19,9 @@ But `curl` and `wget` have not been installed basically on the Windows since tho
 2. Downlaod `nuget` Command-Line Utility at [http://nuget.org/nuget.exe](http://nuget.org/nuget.exe).
 
 3. On the CMD, change directory to download folder of `nuget.exe` and install `chocolatey`. Type the following on the CMD.
-```shell
-nuget.exe install chocolatey
-```
+	```shell
+	nuget.exe install chocolatey
+	```
 4. On the CMD (not one the powershell) type the following
 
 
