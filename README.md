@@ -30,7 +30,7 @@ But `curl` and `wget` have not been installed basically on the Windows since tho
 
 5. Install curl and wget with following commands
 	``` 
-		choco install curl
-		choco install Wget
+	choco install curl
+	choco install Wget
 	```
   Then we can use `download.file` with HTTP Secure.
