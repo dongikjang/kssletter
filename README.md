@@ -17,7 +17,7 @@ But `curl` and `wget` have not been installed basically on the Windows since tho
 
    On the install Rtool, You should check the "Edit the System Path" and 
      add the directory which has `R.exe` file something like 
-     C:\Program Files\R\R-3.1.0\bin\i386;
+     `C:\Program Files\R\R-3.1.0\bin\i386;`
      for 32-bit OS (if you use 64-bit os then the last folder may be `x64`).
    After install Rtool, please check the status of system path on the CMD.
    On the CMD, type `R` (without quotation mark) then R will be excuted
