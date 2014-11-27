@@ -11,7 +11,7 @@ gitadd2 <- "https://raw.githubusercontent.com/dongikjang/"
 # install required packages
 reqpkgs <- c("mapdata", "RColorBrewer", "RNetCDF", "colorRamps", "rgl", 
              "ggmap", "jpeg", "png", "plyr", "fields", "geosphere", 
-             "XML", "bitops", "jpeg", "ggplot2",
+             "XML", "bitops", "devtools", "ggplot2",
              "scales", "polyclip", "maptools", "rgdal", "data.table", 
              "RgoogleMaps", "sp", "maps", "RCurl")
 inspkgind <- !reqpkgs %in% installed.packages()[,1] 
@@ -300,7 +300,7 @@ result6 <- predictSurface(fit6, grid.list = NULL, extrap = FALSE,
                           nx = 200, ny = 200, drop.Z = TRUE)
 
 library(scales)
-par(mar = c(0,0,0,0), xaxs = "i", yaxs = "i")
+par(mar = c(0,0,0,0), xaxs = "i", yaxs = "i", mfrow=c(1,1))
 plot(c(xmin, xmax), c(ymin, ymax), type = "n", xlab = "", ylab = "")
 rasterImage(outraster, xmin, ymin, xmax, ymax, interpolate = TRUE)
 image(result1, add=TRUE, col=alpha(tim.colors(64), .7))
@@ -328,7 +328,7 @@ for(i in 1:6){
   axis(4, cex.axis=3, padj=.5)
   #dev.off()
 }
-
+par(mfrow=c(1,1))
 
 
 #####################################################################################################
@@ -520,7 +520,7 @@ axis(1, at=atval, labels=labval, cex.axis=3, padj=.7)
 mtext(expression(group("(", bold(명/km^2), ")")), side=1, line=2.1, at=1.07, cex=2)
 #dev.off()
 
-
+par(mfrow=c(1,1))
 
 #####################################################################################################
 #####################################################################################################
@@ -644,3 +644,17 @@ plot_ways(road4, add=T, lwd=2, col=cols[2])
 plot_ways(road5, add=T, lwd=1, col=cols[2])
 plot(as_sp(building, "polygons"), col = cols[4], add=TRUE)
 #dev.off()
+
+
+#require(devtools)
+install_github('rCharts', 'ramnathv')
+install_github('dongikjang/rMapskr')
+
+library(rMapskr)
+map3 <- Leaflet$new("daum")
+#map3$setView(c(37.56641861115186, 126.97787362769193), zoom = 11)
+map3$marker(c(37.5545355, 126.9706773), bindPopup = "<p> Seoul Station </p>")
+map3$marker(c(37.5666208, 126.9783823), bindPopup = "<p> City Hall of Seoul </p>")
+map3
+
+
