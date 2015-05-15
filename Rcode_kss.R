@@ -279,23 +279,41 @@ ymax <- attr(out, "bb")$ur.lat
 
 outraster <- as.raster(out)
 
+xymar <- data.frame(lon = c(xmin, xmax), lat=c(ymin, ymax))
+coordinates(xymar) <- c("lon", "lat")
+proj4string(xymar) <- CRS("+proj=longlat")
+library(rgdal)
+xymar <- spTransform(xymar, CRS("+proj=merc"))
+
+xmin <- coordinates(xymar)[1, "lon"]
+xmax <- coordinates(xymar)[2, "lon"]
+ymin <- coordinates(xymar)[1, "lat"]
+ymax <- coordinates(xymar)[2, "lat"]
+
+pm10_longlat <- pm10[, c("경도", "위도")]
+colnames(pm10_longlat) <- c("lon", "lat")
+coordinates(pm10_longlat) <- c("lon", "lat")
+proj4string(pm10_longlat) <- CRS("+proj=longlat")
+pm10_merc <- spTransform(pm10_longlat, CRS("+proj=merc"))
+
+
 library(fields)
-fit1 <- Tps(pm10[, c("경도", "위도")], pm10$pm10, lambda=0.0000001)
+fit1 <- Tps(coordinates(pm10_merc), pm10$pm10, lambda=0.0000001)
 result1 <- predictSurface(fit1, grid.list = NULL, extrap = FALSE, 
                           nx = 200, ny = 200, drop.Z = TRUE)
-fit2 <- Tps(pm10[, c("경도", "위도")], pm10$pm2.5)
+fit2 <- Tps(coordinates(pm10_merc), pm10$pm2.5)
 result2 <- predictSurface(fit2, grid.list = NULL, extrap = FALSE, 
                           nx = 200, ny = 200, drop.Z = TRUE)
-fit3 <- Tps(pm10[, c("경도", "위도")], pm10$no2, lambda=0.0000001)
+fit3 <- Tps(coordinates(pm10_merc), pm10$no2, lambda=0.0000001)
 result3 <- predictSurface(fit3, grid.list = NULL, extrap = FALSE, 
                           nx = 200, ny = 200, drop.Z = TRUE)
-fit4 <- Tps(pm10[, c("경도", "위도")], pm10$o3, lambda=0.0000001)
+fit4 <- Tps(coordinates(pm10_merc), pm10$o3, lambda=0.0000001)
 result4 <- predictSurface(fit4, grid.list = NULL, extrap = FALSE, 
                           nx = 200, ny = 200, drop.Z = TRUE)
-fit5 <- Tps(pm10[, c("경도", "위도")], pm10$so2)
+fit5 <- Tps(coordinates(pm10_merc), pm10$so2)
 result5 <- predictSurface(fit5, grid.list = NULL, extrap = FALSE, 
                           nx = 200, ny = 200, drop.Z = TRUE)
-fit6 <- Tps(pm10[, c("경도", "위도")], pm10$co, lambda=0.0000001)
+fit6 <- Tps(coordinates(pm10_merc), pm10$co, lambda=0.0000001)
 result6 <- predictSurface(fit6, grid.list = NULL, extrap = FALSE, 
                           nx = 200, ny = 200, drop.Z = TRUE)
 
